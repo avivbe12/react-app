@@ -30370,12 +30370,55 @@ module.exports = LoginForm;
 var React = require('react');
 var createReactClass = require('create-react-class');
 var LoginForm = require('./LoginForm.jsx');
+var SignUpForm = require('./SignUpForm.jsx');
 
 var Modal = createReactClass({
     displayName: 'Modal',
 
     getInitialState: function () {
-        return { textContent: 'Default Content' };
+        console.log(this.props.signup);
+
+        var bodyComponent;
+        if (this.props.signup) {
+            bodyComponent = React.createElement(
+                'div',
+                null,
+                React.createElement(SignUpForm, null)
+            );
+        } else {
+            bodyComponent = React.createElement(
+                'div',
+                null,
+                React.createElement(LoginForm, null)
+            );
+        }
+        return { bodyComponent: bodyComponent };
+    },
+    componentDidUpdate: function (nextProps) {
+        var bodyComponent;
+        var isChanged = false;
+
+        if (nextProps.signup != this.props.signup) {
+            isChanged = true;
+
+            if (!nextProps.signup) {
+                bodyComponent = React.createElement(
+                    'div',
+                    null,
+                    React.createElement(SignUpForm, null)
+                );
+            } else {
+                bodyComponent = React.createElement(
+                    'div',
+                    null,
+                    React.createElement(LoginForm, null)
+                );
+            }
+        }
+
+        if (isChanged) {
+            this.setState({ bodyComponent: bodyComponent });
+        }
     },
     render: function () {
         return React.createElement(
@@ -30408,7 +30451,7 @@ var Modal = createReactClass({
                     React.createElement(
                         'div',
                         { className: 'modal-body' },
-                        React.createElement(LoginForm, null)
+                        this.state.bodyComponent
                     ),
                     React.createElement(
                         'div',
@@ -30432,7 +30475,7 @@ var Modal = createReactClass({
 
 module.exports = Modal;
 
-},{"./LoginForm.jsx":27,"create-react-class":2,"react":16}],29:[function(require,module,exports){
+},{"./LoginForm.jsx":27,"./SignUpForm.jsx":30,"create-react-class":2,"react":16}],29:[function(require,module,exports){
 var React = require('react');
 var createReactClass = require('create-react-class');
 var Modal = require('./Modal.jsx');
@@ -30440,12 +30483,20 @@ var Modal = require('./Modal.jsx');
 var navbar = createReactClass({
     displayName: 'navbar',
 
-
+    getInitialState: function () {
+        return { modalTitle: 'Login', confirmBtnName: 'Login', signup: false };
+    },
+    clickedLogin: function () {
+        this.setState({ modalTitle: 'Login', confirmBtnName: 'Login', signup: false });
+    },
+    clickedSignUp: function () {
+        this.setState({ modalTitle: 'Signup', confirmBtnName: 'Signup', signup: true });
+    },
     render: function () {
         return React.createElement(
             'div',
             null,
-            React.createElement(Modal, { modalTitle: 'Login', confirmBtnName: 'Login' }),
+            React.createElement(Modal, { modalTitle: this.state.modalTitle, confirmBtnName: this.state.confirmBtnName, signup: this.state.signup }),
             React.createElement(
                 'nav',
                 { className: 'navbar navbar-light bg-light' },
@@ -30465,10 +30516,16 @@ var navbar = createReactClass({
                 ),
                 React.createElement(
                     'div',
-                    { className: 'text-right px-0' },
+                    { className: 'text-right px-0 row', style: { width: '150px' } },
                     React.createElement(
                         'button',
-                        { type: 'button', className: 'btn btn-primary', 'data-toggle': 'modal', 'data-target': '#exampleModal' },
+                        { type: 'button', className: 'btn btn-primary px-0 col-md-5', 'data-toggle': 'modal', 'data-target': '#exampleModal', onClick: this.clickedSignUp },
+                        'Signup'
+                    ),
+                    React.createElement('div', { className: 'col-md-1 px-0' }),
+                    React.createElement(
+                        'button',
+                        { type: 'button', className: 'btn btn-primary col-md-5 px-0', 'data-toggle': 'modal', 'data-target': '#exampleModal', onClick: this.clickedLogin },
                         'Login'
                     )
                 )
@@ -30481,6 +30538,65 @@ module.exports = navbar;
 
 },{"./Modal.jsx":28,"create-react-class":2,"react":16}],30:[function(require,module,exports){
 var React = require('react');
+var createReactClass = require('create-react-class');
+
+var SignUpForm = createReactClass({
+    displayName: 'SignUpForm',
+
+    getInitialState: function () {
+        return { textContent: 'Default Content' };
+    },
+    render: function () {
+        return React.createElement(
+            'div',
+            null,
+            React.createElement(
+                'form',
+                null,
+                React.createElement(
+                    'div',
+                    { className: 'form-group' },
+                    React.createElement(
+                        'label',
+                        { htmlFor: 'exampleInputEmail1' },
+                        'Email address sign up'
+                    ),
+                    React.createElement('input', { type: 'email', className: 'form-control', id: 'exampleInputEmail1', 'aria-describedby': 'emailHelp', placeholder: 'Enter email' }),
+                    React.createElement(
+                        'small',
+                        { id: 'emailHelp', className: 'form-text text-muted' },
+                        'We\'ll never share your email with anyone else.'
+                    )
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'form-group' },
+                    React.createElement(
+                        'label',
+                        { htmlFor: 'exampleInputPassword1' },
+                        'Password'
+                    ),
+                    React.createElement('input', { type: 'password', className: 'form-control', id: 'exampleInputPassword1', placeholder: 'Password' })
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'form-group form-check' },
+                    React.createElement('input', { type: 'checkbox', className: 'form-check-input', id: 'exampleCheck1' }),
+                    React.createElement(
+                        'label',
+                        { className: 'form-check-label', htmlFor: 'exampleCheck1' },
+                        'Check me out'
+                    )
+                )
+            )
+        );
+    }
+});
+
+module.exports = SignUpForm;
+
+},{"create-react-class":2,"react":16}],31:[function(require,module,exports){
+var React = require('react');
 var ReactDOM = require('react-dom');
 var Navbar = require('./components/NavBar.jsx');
 var ListsManager = require('./components/ListsManager.jsx');
@@ -30488,4 +30604,4 @@ var ListsManager = require('./components/ListsManager.jsx');
 ReactDOM.render(React.createElement(Navbar, { title: 'navigation' }), document.getElementById('nav'));
 ReactDOM.render(React.createElement(ListsManager, { title: 'Ingridients' }), document.getElementById('ingredients'));
 
-},{"./components/ListsManager.jsx":26,"./components/NavBar.jsx":29,"react":16,"react-dom":13}]},{},[30]);
+},{"./components/ListsManager.jsx":26,"./components/NavBar.jsx":29,"react":16,"react-dom":13}]},{},[31]);

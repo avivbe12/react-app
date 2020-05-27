@@ -1,10 +1,37 @@
 var React = require('react');
 var createReactClass = require('create-react-class');
 var LoginForm = require('./LoginForm.jsx')
+var SignUpForm = require('./SignUpForm.jsx');
 
 var Modal = createReactClass({
     getInitialState: function(){
-        return {textContent:'Default Content'};
+        console.log(this.props.signup);
+
+        var bodyComponent;
+        if(this.props.signup){
+            bodyComponent = <div><SignUpForm></SignUpForm></div>;
+        }else{
+            bodyComponent = <div><LoginForm></LoginForm></div>;
+        }
+        return {bodyComponent:bodyComponent};
+    },
+    componentDidUpdate: function(nextProps){
+        var bodyComponent;
+        var isChanged = false;
+
+        if(nextProps.signup != this.props.signup){
+            isChanged = true;
+
+            if(!nextProps.signup){
+                bodyComponent = <div><SignUpForm></SignUpForm></div>;
+            }else{
+                bodyComponent = <div><LoginForm></LoginForm></div>;
+            }
+        }
+        
+        if(isChanged){
+            this.setState({bodyComponent: bodyComponent});
+        }
     },
     render: function(){
         return(
@@ -18,7 +45,7 @@ var Modal = createReactClass({
                         </button>
                     </div>
                     <div className="modal-body">
-                        <LoginForm></LoginForm>
+                        {this.state.bodyComponent}
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
